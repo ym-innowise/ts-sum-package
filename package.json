@@ -1,0 +1,27 @@
+{
+"name": "@ymlechka/ts-sum-package",
+"version": "0.1.0",
+"private": false,
+"main": "dist/index.js",
+"types": "dist/index.d.ts",
+"files": [
+"dist"
+],
+"scripts": {
+"lint": "eslint . --ext .ts",
+"format": "prettier --write .",
+"build": "tsc -p tsconfig.json",
+"test": "vitest run",
+"test:watch": "vitest",
+"e2e": "node ./e2e/run-e2e.js"
+},
+"devDependencies": {
+"@types/node": "^18.0.0",
+"@typescript-eslint/eslint-plugin": "^6.0.0",
+"@typescript-eslint/parser": "^6.0.0",
+"eslint": "^8.0.0",
+"prettier": "^3.0.0",
+"typescript": "5.3.3",
+"vitest": "^1.0.0"
+}
+}
