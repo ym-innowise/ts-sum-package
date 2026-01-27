@@ -10,20 +10,34 @@ jobs:
   protect:
     runs-on: ubuntu-latest
     steps:
-      - name: Protect main
+      - name: Protect default branch
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          OWNER: ${{ github.repository_owner }}
-          REPO: ${{ github.event.repository.name }}
+          REPO_FULL: ${{ github.repository }}
         run: |
+          set -euo pipefail
+
           REQUIRED='["pr-verify"]'
 
-          gh api -X PUT "repos/$OWNER/$REPO/branches/main/protection" \
-            -f required_status_checks.strict=true \
-            -f required_status_checks.contexts="$REQUIRED" \
-            -f enforce_admins=true \
-            -f required_pull_request_reviews.required_approving_review_count=1 \
-            -f required_linear_history=true \
-            -f required_conversation_resolution=true \
-            -f allow_force_pushes=false \
-            -f allow_deletions=false
+          echo "Repo: $REPO_FULL"
+          BRANCH=$(gh api "repos/$REPO_FULL" -q .default_branch)
+          echo "Default branch: $BRANCH"
+
+          cat > payload.json <<JSON
+          {
+            "required_status_checks": {
+              "strict": true,
+              "contexts": ${REQUIRED}
+            },
+            "enforce_admins": true,
+            "required_pull_request_reviews": {
+              "required_approving_review_count": 1
+            },
+            "required_linear_history": true,
+            "required_conversation_resolution": true,
+            "allow_force_pushes": false,
+            "allow_deletions": false
+          }
+          JSON
+
+          gh api -X PUT "repos/$REPO_FULL/branches/$BRANCH/protection" --input payload.json
