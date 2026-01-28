@@ -12,7 +12,7 @@ All reusable CI logic is extracted to a separate repo and consumed as **reusable
 - **App repo (this repo):** `https://github.com/ym-innowise/ts-sum-package`
 - **Reusable workflows repo:** `https://github.com/ym-innowise/workflows-library`
 
----
+---------------
 
 ## What this project provides
 
