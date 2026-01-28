@@ -21,6 +21,5 @@ jobs:
     uses: ym-innowise/workflows-library/.github/workflows/gh-release-on-merge.yml@main
     with:
       working-directory: '.'
-      # Keep this if your reusable workflow still requires node-version input
       node-version: ${{ vars.NODE_VERSION || '22.10.0' }}
     secrets: inherit
