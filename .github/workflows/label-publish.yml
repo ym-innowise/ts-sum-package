@@ -1,4 +1,4 @@
-name: PR label publish (RC artifact)
+name: PR label publish (release candidate)
 
 on:
   pull_request:
@@ -10,7 +10,6 @@ permissions:
 jobs:
   rc:
     if: contains(github.event.pull_request.labels.*.name, 'publish')
-    uses: ym-innowise/workflows-library/.github/workflows/gh-pack-rc.yml@main
+    uses: ym-innowise/workflows-library/.github/workflows/pr-label-publish.yml@main
     with:
-      node-version: '20'
       working-directory: '.'
