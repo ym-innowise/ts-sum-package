@@ -31,9 +31,9 @@ All reusable CI logic is extracted to a separate repo and consumed as **reusable
 
 ### Pull Request verification (runs on every PR)
 
-Workflow: `.github/workflows/pr.yml` (calls reusable workflow)
+Workflow: `.github/workflows/pr-verify.yml` (calls reusable workflow)
 
-Enforced via **branch protection** (configured automatically by workflow):
+Enforced via **branch protection** (configured automatically by separate workflow):
 - **Up-to-date branch with `main`** (required checks set to *strict*)
 - **Linear history** (no merge commits)
 - **PR cannot be merged unless all checks pass**
@@ -94,7 +94,7 @@ When a PR with label **`publish`** is merged into `main`:
 - **Semantic versioning** is required: `X.Y.Z`
 - The version must be **explicitly bumped in the PR** (`package.json` version must differ from `main`)
 - Pre-merge `publish` builds generate a temporary suffix:
-  - `X.Y.Z-dev-<short-sha>` (not committed)
+  - `X.Y.Z-${VAR}-<short-sha>` (not committed)
 
 ---
 
