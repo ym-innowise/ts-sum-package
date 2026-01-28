@@ -18,7 +18,6 @@ jobs:
           set -euo pipefail
 
           REQUIRED='["PR verification / pr-verify / pr-verify"]'
-
           echo "Repo: $REPO_FULL"
           BRANCH=$(gh api "repos/$REPO_FULL" -q .default_branch)
           echo "Default branch: $BRANCH"
