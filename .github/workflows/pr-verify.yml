@@ -1,0 +1,10 @@
+name: PR verification
+
+on:
+  pull_request:
+
+jobs:
+  pr-verify:
+    uses: ym-innowise/workflows-library/.github/workflows/pr-verify.yml@v1
+    with:
+      working-directory: '.'
