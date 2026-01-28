@@ -1,4 +1,4 @@
-name: Release on merge (publish label)
+name: Release on merge event (publish label)
 
 on:
   pull_request:
