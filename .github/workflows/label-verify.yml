@@ -1,4 +1,4 @@
-name: PR label verify (E2E)
+name: label verify (E2E)
 
 on:
   pull_request:

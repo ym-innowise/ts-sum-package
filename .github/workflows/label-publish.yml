@@ -1,4 +1,4 @@
-name: PR label publish (release candidate)
+name: label publish (RC)
 
 on:
   pull_request:
