@@ -5,6 +5,6 @@ on:
 
 jobs:
   pr-verify:
-    uses: ym-innowise/workflows-library/.github/workflows/pr-verify.yml@v1
+    uses: ym-innowise/workflows-library/.github/workflows/pr-verify.yml@main
     with:
       working-directory: '.'
