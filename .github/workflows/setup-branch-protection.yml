@@ -16,14 +16,21 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
         run: |
-          REQUIRED='["pr-verify"]'
           BRANCH=$(gh api "repos/$OWNER/$REPO" -q .default_branch)
-          gh api -X PUT "repos/$OWNER/$REPO/branches/$BRANCH/protection" \
-            -f required_status_checks[strict]=true \
-            -F required_status_checks[contexts][]=pr-verify \
-            -f enforce_admins=true \
-            -f required_pull_request_reviews[required_approving_review_count]=1 \
-            -f required_linear_history=true \
-            -f required_conversation_resolution=true \
-            -f allow_force_pushes=false \
-            -f allow_deletions=false
+          gh api -X PUT "repos/$OWNER/$REPO/branches/$BRANCH/protection" --input - <<EOF
+          {
+            "required_status_checks": {
+              "strict": true,
+              "contexts": ["pr-verify"]
+            },
+            "enforce_admins": true,
+            "required_pull_request_reviews": {
+              "required_approving_review_count": 1
+            },
+            "restrictions": null,
+            "required_linear_history": true,
+            "allow_force_pushes": false,
+            "allow_deletions": false,
+            "required_conversation_resolution": true
+          }
+          EOF
