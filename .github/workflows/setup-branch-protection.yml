@@ -59,3 +59,8 @@ jobs:
           JSON
 
           gh api -X PUT "repos/$REPO_FULL/branches/$BRANCH/protection" --input payload.json
+
+          # Remove legacy status contexts (like "pr-verify") so branch protection relies only on checks.
+          # This prevents GitHub from still expecting a non-existent commit status.
+          gh api -X DELETE "repos/$REPO_FULL/branches/$BRANCH/protection/required_status_checks/contexts" \
+            -f contexts[]="$REQUIRED_CONTEXT" || true
