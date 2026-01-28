@@ -17,16 +17,34 @@ jobs:
         run: |
           set -euo pipefail
 
-          REQUIRED='["pr-verify"]'
+          REQUIRED_CONTEXT="pr-verify"
           echo "Repo: $REPO_FULL"
           BRANCH=$(gh api "repos/$REPO_FULL" -q .default_branch)
           echo "Default branch: $BRANCH"
+
+          # Branch protection "checks" requires the GitHub App id + check-run context.
+          # Commit Statuses API may be empty for GitHub Actions, so we use the Check Runs API.
+          SHA=$(gh api "repos/$REPO_FULL/commits/$BRANCH" -q .sha)
+          echo "Latest SHA on $BRANCH: $SHA"
+
+          APP_ID=$(gh api "repos/$REPO_FULL/commits/$SHA/check-runs" -q ".check_runs[] | select(.name == \"$REQUIRED_CONTEXT\") | .app.id" | head -n 1)
+          if [ -z "${APP_ID:-}" ]; then
+            echo "WARNING: Could not detect app_id for check '$REQUIRED_CONTEXT' on $SHA. Falling back to GitHub Actions app id 15368."
+            APP_ID=15368
+          fi
+
+          echo "Using required check: context=$REQUIRED_CONTEXT app_id=$APP_ID"
 
           cat > payload.json <<JSON
           {
             "required_status_checks": {
               "strict": true,
-              "contexts": ${REQUIRED}
+              "checks": [
+                {
+                  "context": "${REQUIRED_CONTEXT}",
+                  "app_id": ${APP_ID}
+                }
+              ]
             },
             "enforce_admins": true,
             "required_pull_request_reviews": {
