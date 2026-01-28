@@ -1,4 +1,4 @@
-name: PR verify
+name: pr-verify
 
 on:
   pull_request:
