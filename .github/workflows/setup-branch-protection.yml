@@ -13,54 +13,17 @@ jobs:
       - name: Protect default branch
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          REPO_FULL: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
         run: |
-          set -euo pipefail
-
-          REQUIRED_CONTEXT="pr-verify"
-          echo "Repo: $REPO_FULL"
+          REQUIRED=["pr-verify"]
           BRANCH=$(gh api "repos/$REPO_FULL" -q .default_branch)
-          echo "Default branch: $BRANCH"
-
-          # Branch protection "checks" requires the GitHub App id + check-run context.
-          # Commit Statuses API may be empty for GitHub Actions, so we use the Check Runs API.
-          SHA=$(gh api "repos/$REPO_FULL/commits/$BRANCH" -q .sha)
-          echo "Latest SHA on $BRANCH: $SHA"
-
-          APP_ID=$(gh api "repos/$REPO_FULL/commits/$SHA/check-runs" -q ".check_runs[] | select(.name == \"$REQUIRED_CONTEXT\") | .app.id" | head -n 1)
-          if [ -z "${APP_ID:-}" ]; then
-            echo "WARNING: Could not detect app_id for check '$REQUIRED_CONTEXT' on $SHA. Falling back to GitHub Actions app id 15368."
-            APP_ID=15368
-          fi
-
-          echo "Using required check: context=$REQUIRED_CONTEXT app_id=$APP_ID"
-
-          cat > payload.json <<JSON
-          {
-            "required_status_checks": {
-              "strict": true,
-              "checks": [
-                {
-                  "context": "${REQUIRED_CONTEXT}",
-                  "app_id": ${APP_ID}
-                }
-              ]
-            },
-            "enforce_admins": true,
-            "required_pull_request_reviews": {
-              "required_approving_review_count": 1
-            },
-            "required_linear_history": true,
-            "required_conversation_resolution": true,
-            "allow_force_pushes": false,
-            "allow_deletions": false,
-            "restrictions": null
-          }
-          JSON
-
-          gh api -X PUT "repos/$REPO_FULL/branches/$BRANCH/protection" --input payload.json
-
-          # Remove legacy status contexts (like "pr-verify") so branch protection relies only on checks.
-          # This prevents GitHub from still expecting a non-existent commit status.
-          gh api -X DELETE "repos/$REPO_FULL/branches/$BRANCH/protection/required_status_checks/contexts" \
-            -f contexts[]="$REQUIRED_CONTEXT" || true
+          gh api -X PUT "repos/$OWNER/$REPO/$BRANCH/main/protection" \
+            -f required_status_checks.strict=true \
+            -f required_status_checks.contexts="$REQUIRED" \
+            -f enforce_admins=true \
+            -f required_pull_request_reviews.required_approving_review_count=1 \
+            -f required_linear_history=true \
+            -f required_conversation_resolution=true \
+            -f allow_force_pushes=false \
+            -f allow_deletions=false
