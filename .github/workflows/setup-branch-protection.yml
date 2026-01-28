@@ -21,7 +21,7 @@ jobs:
           {
             "required_status_checks": {
               "strict": true,
-              "contexts": ["pr-verify"]
+              "contexts": ["pr-verify / pr-verify"]
             },
             "enforce_admins": true,
             "required_pull_request_reviews": {
