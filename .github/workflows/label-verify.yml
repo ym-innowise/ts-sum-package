@@ -1,0 +1,20 @@
+name: PR label verify (E2E)
+
+on:
+  pull_request:
+    types: [labeled, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    # Run only if the PR has the 'verify' label
+    if: contains(github.event.pull_request.labels.*.name, 'verify')
+    uses: ym-innowise/workflows-library/.github/workflows/e2e.yml@main
+    with:
+      # Directory in the app repo where package.json lives
+      working-directory: '.'
+      # Node version – resolved from environment/repo/org vars if you use NODE_VERSION,
+      # or hard-code a version for now (e.g. '22.10.0')
+      node-version: ${{ vars.NODE_VERSION || '22.10.0' }}
