@@ -1,0 +1,26 @@
+name: Release on merge (publish label)
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    # Only run when:
+    # - PR was merged (not just closed)
+    # - PR targets main
+    # - PR has label "publish"
+    if: >
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      contains(github.event.pull_request.labels.*.name, 'publish')
+
+    uses: ym-innowise/workflows-library/.github/workflows/gh-release-on-merge.yml@main
+    with:
+      working-directory: '.'
+      # Keep this if your reusable workflow still requires node-version input
+      node-version: ${{ vars.NODE_VERSION || '22.10.0' }}
+    secrets: inherit
